@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -12,7 +13,9 @@
     <artifactId>001-algafood-api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>001-algafood-api</name>
-    <description>Repository created as container for code made by me while studying Sprinf framework.</description>
+    <description>Repository created as container for code made by me while studying Sprinf
+        framework.
+    </description>
     <properties>
         <java.version>11</java.version>
     </properties>
@@ -41,8 +44,15 @@
             <artifactId>spring-boot-devtools</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+
     </dependencies>
-	
+
     <build>
         <plugins>
             <plugin>
