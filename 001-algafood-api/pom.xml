@@ -13,7 +13,7 @@
     <artifactId>001-algafood-api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>001-algafood-api</name>
-    <description>Repository created as container for code made by me while studying Sprinf
+    <description>Repository created as container for code made by me while studying Spring
         framework.
     </description>
     <properties>
@@ -49,7 +49,6 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-
 
     </dependencies>
 
