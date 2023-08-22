@@ -2,12 +2,14 @@ package com.guilhermemarx14.algafoodapi.infrastructure.repository;
 
 import com.guilhermemarx14.algafoodapi.domain.entity.places.State;
 import com.guilhermemarx14.algafoodapi.domain.repository.StateRepository;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class StateRepositoryImpl implements StateRepository {
@@ -33,7 +35,11 @@ public class StateRepositoryImpl implements StateRepository {
 
     @Transactional
     @Override
-    public void delete(State state) {
+    public void delete(Long id) {
+        var state = findById(id);
+
+        if (Objects.isNull(state)) throw new EmptyResultDataAccessException(1);
+
         manager.remove(findById(state.getId()));
     }
 }

@@ -2,12 +2,14 @@ package com.guilhermemarx14.algafoodapi.infrastructure.repository;
 
 import com.guilhermemarx14.algafoodapi.domain.entity.Kitchen;
 import com.guilhermemarx14.algafoodapi.domain.repository.KitchenRepository;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class KitchenRepositoryImpl implements KitchenRepository {
@@ -17,7 +19,7 @@ public class KitchenRepositoryImpl implements KitchenRepository {
 
     @Override
     public List<Kitchen> list() {
-         return manager.createQuery("from Kitchen", Kitchen.class).getResultList();
+        return manager.createQuery("from Kitchen", Kitchen.class).getResultList();
     }
 
     @Transactional
@@ -34,7 +36,11 @@ public class KitchenRepositoryImpl implements KitchenRepository {
 
     @Transactional
     @Override
-    public void delete(Kitchen kitchen) {
-        manager.remove(findById(kitchen.getId()));
+    public void delete(Long id) {
+        var kitchen = findById(id);
+
+        if (Objects.isNull(kitchen)) throw new EmptyResultDataAccessException(1);
+
+        manager.remove(kitchen);
     }
 }

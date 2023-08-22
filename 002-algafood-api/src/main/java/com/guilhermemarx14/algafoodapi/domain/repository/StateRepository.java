@@ -12,5 +12,5 @@ public interface StateRepository {
 
     State findById(Long id);
 
-    void delete(State state);
+    void delete(Long id);
 }

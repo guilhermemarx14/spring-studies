@@ -10,15 +10,14 @@ import org.springframework.context.ApplicationContext;
 import java.util.List;
 
 public class JpaMain {
-    public static void main(String[] args){
+    public static void main(String[] args) {
         ApplicationContext applicationContext = new SpringApplicationBuilder(Application.class).web(WebApplicationType.NONE).run(args);
-
 
 
         var restaurantRepository = applicationContext.getBean(RestaurantRepository.class);
         List<Restaurant> restaurants = restaurantRepository.list();
 
-        for(Restaurant e: restaurants){
+        for (Restaurant e : restaurants) {
             System.out.println(e);
         }
 

@@ -12,5 +12,5 @@ public interface CityRepository {
 
     City findById(Long id);
 
-    void delete(City city);
+    void delete(Long id);
 }

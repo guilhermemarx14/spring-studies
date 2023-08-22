@@ -12,5 +12,5 @@ public interface KitchenRepository {
 
     Kitchen findById(Long id);
 
-    void delete(Kitchen kitchen);
+    void delete(Long id);
 }
