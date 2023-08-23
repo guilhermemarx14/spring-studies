@@ -5,9 +5,8 @@ import com.guilhermemarx14.algafoodapi.domain.exception.EntityNotFoundException;
 import com.guilhermemarx14.algafoodapi.domain.repository.CityRepository;
 import com.guilhermemarx14.algafoodapi.domain.repository.StateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
 
 @Service
 public class CityRegistrationService {
@@ -21,25 +20,25 @@ public class CityRegistrationService {
     public City save(City city) {
         var stateId = city.getState().getId();
 
-        var stateFound = stateRepository.findById(stateId);
+        var stateFoundOptional = stateRepository.findById(stateId);
 
-        if (Objects.isNull(stateFound)) {
+        if (stateFoundOptional.isEmpty()) {
             throw new EntityNotFoundException("The State " + stateId + " does not exist");
         }
 
-        city.setState(stateFound);
+        city.setState(stateFoundOptional.get());
         return cityRepository.save(city);
     }
 
     public void delete(Long id) {
-        var city = cityRepository.findById(id);
 
-        if (Objects.isNull(city)) {
-            throw new EntityNotFoundException("The city " + id + " does not exist");
+        try {
+            cityRepository.deleteById(id);
+
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException("The kitchen " + id + " does not exist");
+
         }
-
-        cityRepository.delete(id);
-
     }
 
 

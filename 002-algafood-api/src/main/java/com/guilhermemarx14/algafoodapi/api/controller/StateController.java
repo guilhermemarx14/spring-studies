@@ -26,31 +26,28 @@ public class StateController {
 
     @GetMapping
     public List<State> list() {
-        return stateRepository.list();
+        return stateRepository.findAll();
     }
 
     @GetMapping("/{stateId}")
     public ResponseEntity<State> findById(@PathVariable Long stateId) {
-        var state = stateRepository.findById(stateId);
+        var stateOptional = stateRepository.findById(stateId);
 
-        if (Objects.isNull(state)) {
-            return ResponseEntity.notFound().build();
-        }
+        return stateOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 
-        return ResponseEntity.ok(stateRepository.findById(stateId));
     }
 
     @PutMapping("/{stateId}")
     public ResponseEntity<State> update(@PathVariable Long stateId, @RequestBody State state) {
-        var existingState = stateRepository.findById(stateId);
+        var existingStateOptional = stateRepository.findById(stateId);
 
-        if (Objects.isNull(existingState)) {
+        if (existingStateOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        BeanUtils.copyProperties(state, existingState, "id");
-        existingState = stateRegistrationService.save(existingState);
-        return ResponseEntity.ok(existingState);
+        BeanUtils.copyProperties(state, existingStateOptional.get(), "id");
+
+        return ResponseEntity.ok(stateRegistrationService.save(existingStateOptional.get()));
     }
 
     @PostMapping

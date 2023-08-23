@@ -20,7 +20,7 @@ public class StateRegistrationService {
 
     public void delete(Long id) {
         try {
-            stateRepository.delete(id);
+            stateRepository.deleteById(id);
 
         } catch (EmptyResultDataAccessException e) {
             throw new EntityNotFoundException("The state " + id + " does not exist");

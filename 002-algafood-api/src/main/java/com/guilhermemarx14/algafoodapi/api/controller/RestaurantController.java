@@ -1,6 +1,7 @@
 package com.guilhermemarx14.algafoodapi.api.controller;
 
 import com.guilhermemarx14.algafoodapi.domain.entity.Restaurant;
+import com.guilhermemarx14.algafoodapi.domain.entity.places.City;
 import com.guilhermemarx14.algafoodapi.domain.exception.EntityNotFoundException;
 import com.guilhermemarx14.algafoodapi.domain.repository.RestaurantRepository;
 import com.guilhermemarx14.algafoodapi.domain.service.RestaurantRegistrationService;
@@ -28,14 +29,14 @@ public class RestaurantController {
 
     @GetMapping
     public List<Restaurant> list() {
-        return restaurantRepository.list();
+        return restaurantRepository.findAll();
     }
 
     @GetMapping("/{restaurantId}")
     public ResponseEntity<Restaurant> findById(@PathVariable Long restaurantId) {
-        var restaurant = restaurantRepository.findById(restaurantId);
+        var restaurantOptional = restaurantRepository.findById(restaurantId);
 
-        return !Objects.isNull(restaurant) ? ResponseEntity.ok(restaurant) : ResponseEntity.notFound().build();
+        return restaurantOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -53,18 +54,15 @@ public class RestaurantController {
 
     @PutMapping("/{restaurantId}")
     public ResponseEntity<Object> update(@PathVariable Long restaurantId, @RequestBody Restaurant restaurant) {
-        var existingRestaurant = restaurantRepository.findById(restaurantId);
+        var existingRestaurantOptional = restaurantRepository.findById(restaurantId);
 
-        if (Objects.isNull(existingRestaurant)) {
+        if (existingRestaurantOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        BeanUtils.copyProperties(restaurant, existingRestaurant, "id");
+        BeanUtils.copyProperties(restaurant, existingRestaurantOptional.get(), "id");
         try {
-            existingRestaurant = restaurantRegistrationService.save(existingRestaurant);
-
-            return ResponseEntity.ok(existingRestaurant);
-
+            return ResponseEntity.ok(restaurantRegistrationService.save(existingRestaurantOptional.get()));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -72,9 +70,9 @@ public class RestaurantController {
 
     @PatchMapping("/{restaurantId}")
     public ResponseEntity<Object> partialUpdate(@PathVariable Long restaurantId, @RequestBody Map<String, Object> originFields) {
-        var targetRestaurant = restaurantRepository.findById(restaurantId);
+        var targetRestaurantOptional = restaurantRepository.findById(restaurantId);
 
-        if (Objects.isNull(targetRestaurant)) {
+        if (targetRestaurantOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
@@ -93,13 +91,23 @@ public class RestaurantController {
 
 
                 Method setMethod = Restaurant.class.getMethod(setMethodName, field.getType());
-                setMethod.invoke(targetRestaurant, value);
+                setMethod.invoke(targetRestaurantOptional.get(), value);
 
             }
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
-        return update(restaurantId, targetRestaurant);
+        return update(restaurantId, targetRestaurantOptional.get());
+    }
+
+    @DeleteMapping("/{restaurantId}")
+    public ResponseEntity<City> delete(@PathVariable Long restaurantId) {
+        try {
+            restaurantRegistrationService.delete(restaurantId);
+            return ResponseEntity.noContent().build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

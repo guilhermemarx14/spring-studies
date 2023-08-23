@@ -24,30 +24,28 @@ public class CityController {
 
     @GetMapping
     public List<City> list() {
-        return cityRepository.list();
+        return cityRepository.findAll();
     }
 
     @GetMapping("/{cityId}")
     public ResponseEntity<City> findById(@PathVariable Long cityId) {
-        var city = cityRepository.findById(cityId);
+        var cityOptional = cityRepository.findById(cityId);
 
-        return !Objects.isNull(city) ? ResponseEntity.ok(city) : ResponseEntity.notFound().build();
+        return cityOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{cityId}")
     public ResponseEntity<Object> update(@PathVariable Long cityId, @RequestBody City city) {
-        var existingCity = cityRepository.findById(cityId);
+        var existingCityOptional = cityRepository.findById(cityId);
 
-        if (Objects.isNull(existingCity)) {
+        if (existingCityOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        BeanUtils.copyProperties(city, existingCity, "id");
+        BeanUtils.copyProperties(city, existingCityOptional.get(), "id");
 
         try {
-            existingCity = cityRegistrationService.save(existingCity);
-
-            return ResponseEntity.ok(existingCity);
+            return ResponseEntity.ok(cityRegistrationService.save(existingCityOptional.get()));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

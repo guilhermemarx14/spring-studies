@@ -26,14 +26,14 @@ public class KitchenController {
 
     @GetMapping
     public List<Kitchen> list() {
-        return kitchenRepository.list();
+        return kitchenRepository.findAll();
     }
 
     @GetMapping("/{kitchenId}")
     public ResponseEntity<Kitchen> findById(@PathVariable Long kitchenId) {
-        var kitchen = kitchenRepository.findById(kitchenId);
+        var kitchenOptional = kitchenRepository.findById(kitchenId);
 
-        return !Objects.isNull(kitchen) ? ResponseEntity.ok(kitchen) : ResponseEntity.notFound().build();
+        return kitchenOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -43,16 +43,15 @@ public class KitchenController {
 
     @PutMapping("/{kitchenId}")
     public ResponseEntity<Kitchen> update(@PathVariable Long kitchenId, @RequestBody Kitchen kitchen) {
-        var existingKitchen = kitchenRepository.findById(kitchenId);
+        var existingKitchenOptional = kitchenRepository.findById(kitchenId);
 
-        if (Objects.isNull(existingKitchen)) {
+        if (existingKitchenOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        BeanUtils.copyProperties(kitchen, existingKitchen, "id");
-        existingKitchen = kitchenRegistrationService.save(existingKitchen);
+        BeanUtils.copyProperties(kitchen, existingKitchenOptional.get(), "id");
 
-        return ResponseEntity.ok(existingKitchen);
+        return ResponseEntity.ok(kitchenRegistrationService.save(existingKitchenOptional.get()));
     }
 
     @DeleteMapping("/{kitchenId}")
