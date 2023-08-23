@@ -8,9 +8,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -64,7 +68,38 @@ public class RestaurantController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-
     }
 
+    @PatchMapping("/{restaurantId}")
+    public ResponseEntity<Object> partialUpdate(@PathVariable Long restaurantId, @RequestBody Map<String, Object> originFields) {
+        var targetRestaurant = restaurantRepository.findById(restaurantId);
+
+        if (Objects.isNull(targetRestaurant)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            for (Map.Entry<String, Object> entry : originFields.entrySet()) {
+                String property = entry.getKey();
+                Object value = entry.getValue();
+                Field field = ReflectionUtils.findField(Restaurant.class, property);
+
+                if (Objects.isNull(field)) {
+                    return ResponseEntity.badRequest().body("Field " + property + " not found");
+                }
+
+                String propertyName = field.getName();
+                String setMethodName = "set" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
+
+
+                Method setMethod = Restaurant.class.getMethod(setMethodName, field.getType());
+                setMethod.invoke(targetRestaurant, value);
+
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+        return update(restaurantId, targetRestaurant);
+    }
 }
