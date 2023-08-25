@@ -20,14 +20,19 @@ public class RestaurantRegistrationService {
     KitchenRepository kitchenRepository;
 
     public Restaurant save(Restaurant restaurant) {
-        var kitchenId = restaurant.getKitchen().getId();
+        var kitchenId = restaurant
+                .getKitchen()
+                .getId();
 
-        var kitchen = kitchenRepository.findById(kitchenId).orElseThrow(()-> new EntityNotFoundException("The kitchen " + kitchenId + " does not exist"));
+        var kitchen = kitchenRepository
+                .findById(kitchenId)
+                .orElseThrow(() -> new EntityNotFoundException("The kitchen " + kitchenId + " does not exist"));
 
         restaurant.setKitchen(kitchen);
 
         return restaurantRepository.save(restaurant);
     }
+
     public void delete(Long id) {
         try {
             restaurantRepository.deleteById(id);

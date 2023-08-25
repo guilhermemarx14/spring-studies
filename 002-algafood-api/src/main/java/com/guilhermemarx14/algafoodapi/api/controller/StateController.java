@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/states")
@@ -33,7 +32,11 @@ public class StateController {
     public ResponseEntity<State> findById(@PathVariable Long stateId) {
         var stateOptional = stateRepository.findById(stateId);
 
-        return stateOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return stateOptional
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity
+                        .notFound()
+                        .build());
 
     }
 
@@ -42,7 +45,9 @@ public class StateController {
         var existingStateOptional = stateRepository.findById(stateId);
 
         if (existingStateOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity
+                    .notFound()
+                    .build();
         }
 
         BeanUtils.copyProperties(state, existingStateOptional.get(), "id");
@@ -52,18 +57,26 @@ public class StateController {
 
     @PostMapping
     public ResponseEntity<State> save(@RequestBody State state) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(stateRegistrationService.save(state));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(stateRegistrationService.save(state));
     }
 
     @DeleteMapping("/{stateId}")
     public ResponseEntity<State> delete(@PathVariable Long stateId) {
         try {
             stateRegistrationService.delete(stateId);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity
+                    .noContent()
+                    .build();
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity
+                    .notFound()
+                    .build();
         } catch (EntityInUseException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .build();
         }
     }
 }

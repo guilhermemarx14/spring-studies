@@ -36,7 +36,11 @@ public class RestaurantController {
     public ResponseEntity<Restaurant> findById(@PathVariable Long restaurantId) {
         var restaurantOptional = restaurantRepository.findById(restaurantId);
 
-        return restaurantOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return restaurantOptional
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity
+                        .notFound()
+                        .build());
     }
 
     @PostMapping
@@ -45,10 +49,14 @@ public class RestaurantController {
         try {
             restaurant = restaurantRegistrationService.save(restaurant);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(restaurant);
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(restaurant);
 
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
         }
     }
 
@@ -57,23 +65,30 @@ public class RestaurantController {
         var existingRestaurantOptional = restaurantRepository.findById(restaurantId);
 
         if (existingRestaurantOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity
+                    .notFound()
+                    .build();
         }
 
         BeanUtils.copyProperties(restaurant, existingRestaurantOptional.get(), "id");
         try {
             return ResponseEntity.ok(restaurantRegistrationService.save(existingRestaurantOptional.get()));
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
         }
     }
 
     @PatchMapping("/{restaurantId}")
-    public ResponseEntity<Object> partialUpdate(@PathVariable Long restaurantId, @RequestBody Map<String, Object> originFields) {
+    public ResponseEntity<Object> partialUpdate(@PathVariable Long restaurantId,
+                                                @RequestBody Map<String, Object> originFields) {
         var targetRestaurantOptional = restaurantRepository.findById(restaurantId);
 
         if (targetRestaurantOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity
+                    .notFound()
+                    .build();
         }
 
         try {
@@ -83,11 +98,14 @@ public class RestaurantController {
                 Field field = ReflectionUtils.findField(Restaurant.class, property);
 
                 if (Objects.isNull(field)) {
-                    return ResponseEntity.badRequest().body("Field " + property + " not found");
+                    return ResponseEntity
+                            .badRequest()
+                            .body("Field " + property + " not found");
                 }
 
                 String propertyName = field.getName();
-                String setMethodName = "set" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
+                String setMethodName =
+                        "set" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
 
 
                 Method setMethod = Restaurant.class.getMethod(setMethodName, field.getType());
@@ -95,7 +113,9 @@ public class RestaurantController {
 
             }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
         }
 
         return update(restaurantId, targetRestaurantOptional.get());
@@ -105,9 +125,13 @@ public class RestaurantController {
     public ResponseEntity<City> delete(@PathVariable Long restaurantId) {
         try {
             restaurantRegistrationService.delete(restaurantId);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity
+                    .noContent()
+                    .build();
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity
+                    .notFound()
+                    .build();
         }
     }
 }

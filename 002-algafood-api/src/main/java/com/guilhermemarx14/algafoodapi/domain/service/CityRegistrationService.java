@@ -18,7 +18,9 @@ public class CityRegistrationService {
     StateRepository stateRepository;
 
     public City save(City city) {
-        var stateId = city.getState().getId();
+        var stateId = city
+                .getState()
+                .getId();
 
         var stateFoundOptional = stateRepository.findById(stateId);
 

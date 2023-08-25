@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings
+        xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+        version="2.2">
+
+    <named-query name="Restaurant.findByNameAndKitchen">
+        <query>
+            from Restaurant r
+            where r.name like concat('%',:name, '%')
+            and r.kitchen.id = :kitchenId
+        </query>
+    </named-query>
+
+</entity-mappings>

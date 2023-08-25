@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/cities")
@@ -31,7 +30,11 @@ public class CityController {
     public ResponseEntity<City> findById(@PathVariable Long cityId) {
         var cityOptional = cityRepository.findById(cityId);
 
-        return cityOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return cityOptional
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity
+                        .notFound()
+                        .build());
     }
 
     @PutMapping("/{cityId}")
@@ -39,7 +42,9 @@ public class CityController {
         var existingCityOptional = cityRepository.findById(cityId);
 
         if (existingCityOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity
+                    .notFound()
+                    .build();
         }
 
         BeanUtils.copyProperties(city, existingCityOptional.get(), "id");
@@ -47,7 +52,9 @@ public class CityController {
         try {
             return ResponseEntity.ok(cityRegistrationService.save(existingCityOptional.get()));
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
         }
     }
 
@@ -56,10 +63,14 @@ public class CityController {
         try {
             city = cityRegistrationService.save(city);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(city);
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(city);
 
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
         }
     }
 
@@ -67,9 +78,13 @@ public class CityController {
     public ResponseEntity<City> delete(@PathVariable Long cityId) {
         try {
             cityRegistrationService.delete(cityId);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity
+                    .noContent()
+                    .build();
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity
+                    .notFound()
+                    .build();
         }
     }
 }

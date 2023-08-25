@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/kitchens")
@@ -33,12 +32,18 @@ public class KitchenController {
     public ResponseEntity<Kitchen> findById(@PathVariable Long kitchenId) {
         var kitchenOptional = kitchenRepository.findById(kitchenId);
 
-        return kitchenOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return kitchenOptional
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity
+                        .notFound()
+                        .build());
     }
 
     @PostMapping
     public ResponseEntity<Kitchen> save(@RequestBody Kitchen kitchen) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(kitchenRegistrationService.save(kitchen));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(kitchenRegistrationService.save(kitchen));
     }
 
     @PutMapping("/{kitchenId}")
@@ -46,7 +51,9 @@ public class KitchenController {
         var existingKitchenOptional = kitchenRepository.findById(kitchenId);
 
         if (existingKitchenOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity
+                    .notFound()
+                    .build();
         }
 
         BeanUtils.copyProperties(kitchen, existingKitchenOptional.get(), "id");
@@ -60,12 +67,18 @@ public class KitchenController {
         try {
             kitchenRegistrationService.delete(kitchenId);
 
-            return ResponseEntity.noContent().build();
+            return ResponseEntity
+                    .noContent()
+                    .build();
         } catch (EntityInUseException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .build();
 
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity
+                    .notFound()
+                    .build();
 
         }
 
