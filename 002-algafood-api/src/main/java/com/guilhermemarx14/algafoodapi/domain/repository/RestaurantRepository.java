@@ -2,6 +2,7 @@ package com.guilhermemarx14.algafoodapi.domain.repository;
 
 import com.guilhermemarx14.algafoodapi.domain.entity.Restaurant;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -11,6 +12,8 @@ import java.util.Optional;
 @Repository
 public interface RestaurantRepository extends CustomJpaRepository<Restaurant, Long>, CustomRestaurantRepository,
                                               JpaSpecificationExecutor<Restaurant> {
+    @Query("select distinct r from Restaurant r join fetch r.kitchen")
+    List<Restaurant> findAll();
 
     List<Restaurant> findByFreightRateBetween(BigDecimal start, BigDecimal end);
 

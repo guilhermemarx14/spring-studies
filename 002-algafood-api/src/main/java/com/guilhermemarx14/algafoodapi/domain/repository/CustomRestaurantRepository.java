@@ -8,8 +8,8 @@ import java.util.List;
 public interface CustomRestaurantRepository {
     List<Restaurant> findByNameAndFreight(String name, BigDecimal freightRateBegin, BigDecimal freightRateEnd);
 
-    public List<Restaurant> findCriteria(String name, BigDecimal freightRateBegin, BigDecimal freightRateEnd);
+    List<Restaurant> findCriteria(String name, BigDecimal freightRateBegin, BigDecimal freightRateEnd);
 
-    public List<Restaurant> findByFreightNotZero(String name);
+    List<Restaurant> findByFreightNotZero(String name);
 
 }

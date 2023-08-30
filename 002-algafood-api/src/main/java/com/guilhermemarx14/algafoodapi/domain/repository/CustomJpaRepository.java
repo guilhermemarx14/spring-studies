@@ -6,7 +6,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 import java.util.Optional;
 
 @NoRepositoryBean
-public interface CustomJpaRepository<T, ID> extends JpaRepository<T, ID> {
+public interface CustomJpaRepository<T, D> extends JpaRepository<T, D> {
 
     Optional<T> findFirst();
 

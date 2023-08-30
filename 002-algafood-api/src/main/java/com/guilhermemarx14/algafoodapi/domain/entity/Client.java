@@ -5,23 +5,33 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
 @EqualsAndHashCode( onlyExplicitlyIncluded = true )
-public class Kitchen {
+public class Client {
 
     @Id
     @EqualsAndHashCode.Include
     @GeneratedValue( strategy = GenerationType.IDENTITY )
     private Long id;
 
-    @Column( nullable = false )
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false)
+    private LocalDateTime creationDate;
+
     @JsonIgnore
-    @OneToMany( mappedBy = "kitchen" )
-    private List<Restaurant> restaurants = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private UserGroup userGroup;
+
 }

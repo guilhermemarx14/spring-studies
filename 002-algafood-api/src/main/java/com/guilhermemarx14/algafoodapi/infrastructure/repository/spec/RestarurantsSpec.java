@@ -6,6 +6,9 @@ import org.springframework.data.jpa.domain.Specification;
 import java.math.BigDecimal;
 
 public class RestarurantsSpec {
+
+    private RestarurantsSpec(){}
+
     public static Specification<Restaurant> freightRateNonZero() {
         return (root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get("freightRate"), BigDecimal.ZERO);
     }
